@@ -9,7 +9,7 @@ void Inventory::addProduct(const Product product) {
 	products.push_back(product);
 }
 
-bool Inventory::chackAvailability(int productID) const {
+bool Inventory::checkAvailability(int productID) const {
 	for (const auto& product : products) {
 		if (product.getProductID() == productID && product.getQuantity() > 0) {
 			return true;
