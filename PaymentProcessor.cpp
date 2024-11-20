@@ -1,0 +1,4 @@
+class PaymentProcessor {
+public:
+    PaymentProcessor();
+};
