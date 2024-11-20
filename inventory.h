@@ -19,7 +19,7 @@ public:
 	void addProduct(const Product product);
 
 	//void addProduct(const Product& product);
-	bool chackAvailability(int productID) const;
+	bool checkAvailability(int productID) const;
 	void updateInventory(int productID, int quantity);
 	void displayInventory() const;
 };
