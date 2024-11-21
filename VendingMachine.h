@@ -18,7 +18,7 @@ private:
     SalesData* salesData;
 
     void recordSale();
-    void displayHeader();
+    void displayHeader() const;
     int handleMoneyInsertion();
     void initializeProducts();
 

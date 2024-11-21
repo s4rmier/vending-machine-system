@@ -20,8 +20,11 @@ private:
         }
     }
 
-    void displayHeader() const{
-        std::cout << "## University Vendo ##\n\n";
+    void displayHeader() const {
+        std::cout << "+--------------------------------+" << std::endl;
+        std::cout << "|        University Vendo        |" << std::endl;
+        std::cout << "+--------------------------------+" << std::endl;
+        std::cout << std::endl;
     }
 
     int handleMoneyInsertion() {
