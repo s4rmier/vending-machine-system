@@ -268,7 +268,11 @@ void VendingMachine::cancelTransaction() {
    if (currentTransaction) {
        currentTransaction->cancelTransaction();
        if (currentBalance > 0) {
-           returnChange();
+           std::cout << "Returning inserted amount: $" << (currentBalance / 100) << "."
+                    << (currentBalance % 100 < 10 ? "0" : "") << (currentBalance % 100) << "\n";
+           std::cout << "\nPress Enter to continue...";
+           std::cin.get();
+           currentBalance = 0;
        }
        delete currentTransaction;
        currentTransaction = nullptr;
@@ -296,6 +300,10 @@ void VendingMachine::displayOutOfStock() {
 
 int VendingMachine::getCurrentBalance() const {
    return currentBalance;
+}
+
+int VendingMachine::getProductPrice(int productId) {
+    return inventory->getProductPrice(productId);
 }
 
 bool VendingMachine::insertMoney(int amount) {
