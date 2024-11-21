@@ -26,6 +26,7 @@ public:
     VendingMachine(int id);
     ~VendingMachine();
     
+    void pushScreen();
     void displayProducts() const;
     bool selectProduct(int productId);
     bool dispenseProduct(int productId);

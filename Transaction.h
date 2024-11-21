@@ -4,23 +4,26 @@
 
 #include <string>
 
-using namespace std;
-
-class Transaction
-{
+class Transaction {
 private:
-	int transactionID;
-	int amountPaid;
-	int changeReturned;
-	string transactionStatus;
+    int transactionID;
+    int amountPaid;
+    int changeReturned;
+    std::string transactionStatus;
+    int productID;
 
 public:
-	Transaction(int id);
-
-	bool initiateTransaction(int amount);
-	bool completeTransaction(int price);
-	bool refundTransaction();
-	bool cancelTransaction();
+    Transaction(int id);
+    bool initiateTransaction(int amount);
+    bool completeTransaction(int price);
+    bool refundTransaction();
+    bool cancelTransaction();
+    
+    int getTransactionID() const;
+    int getAmountPaid() const;
+    int getChangeReturned() const;
+    int getProductID() const;
+    std::string getStatus() const;
 };
 
 #endif

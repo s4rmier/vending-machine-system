@@ -29,13 +29,14 @@ void Inventory::updateInventory(int productID, int quantity) {
 }
 
 void Inventory::displayInventory() const {
-	for (const auto& product : products) {
-		cout << setw(2) << setfill('0') << product.getProductID() << ". "
-			<< product.getName()
-			<< " - $" << fixed << setprecision(2) << product.getPrice()
-			<< " (Qty: " << product.getQuantity() << ")\n";
-	}
-	cout << "99. Admin Panel\n";
+    for (const auto& product : products) {
+        std::cout << std::setw(2) << std::setfill('0') << product.getProductID() << ". "
+            << product.getName()
+            << " - $" << std::fixed << std::setprecision(2) << std::setfill('0') 
+            << product.getPrice()/100.0
+            << " (Qty: " << product.getQuantity() << ")\n";
+    }
+    std::cout << "\n99. Access Admin Panel\n";
 }
 
 float Inventory::getProductPrice(int productID) const {
