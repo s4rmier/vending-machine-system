@@ -1,8 +1,49 @@
-#include "VendingMachine.h"
+#pragma once
+
+#include "Inventory.h"
+#include "PaymentProcessor.h"
+#include "Admin.h"
+#include "SalesData.h"
+#include "Transaction.h"
+#include <string>
+
+class VendingMachine {
+private:
+    int machineID;
+    int currentBalance;
+    
+    Inventory* inventory;
+    PaymentProcessor* paymentProcessor;
+    Admin* admin;
+    Transaction* currentTransaction;
+    SalesData* salesData;
+
+    void recordSale();
+    void displayHeader() const;
+    int handleMoneyInsertion();
+    void initializeProducts();
+
+public:
+    VendingMachine(int id);
+    ~VendingMachine();
+    
+    void pushScreen();
+    void displayProducts() const;
+    bool selectProduct(int productId);
+    bool dispenseProduct(int productId);
+    void cancelTransaction();
+    bool accessAdminPanel(Admin* adminUser);
+    void displayPrice(int productId);
+    int getProductPrice(int productId);
+    void displayOutOfStock();
+    int getCurrentBalance() const;
+    bool insertMoney(int amount);
+    int returnChange();
+};
+
 #include <iostream>
 #include <iomanip>
 #include <limits>
-#include <map>
 
 VendingMachine::VendingMachine(int id) 
    : machineID(id), currentBalance(0), currentTransaction(nullptr) {
@@ -122,48 +163,27 @@ int VendingMachine::handleMoneyInsertion() {
 }
 
 void VendingMachine::initializeProducts() {
-   inventory->addProduct(Product(1, "Flaming Hot Cheetos", 300, 2));
-   productNames[1] = "Flaming Hot Cheetos";
-   inventory->addProduct(Product(2, "Doritos Nacho Cheese", 300, 0));
-   productNames[2] = "Doritos Nacho Cheese";
-   inventory->addProduct(Product(3, "Lays Classic", 275, 3));
-   productNames[3] = "Lays Classic";
-   inventory->addProduct(Product(4, "Ruffles Cheddar", 275, 5));
-   productNames[4] = "Ruffles Cheddar";
-   inventory->addProduct(Product(5, "Pringles Original", 325, 15));
-   productNames[5] = "Pringles Original";
-   inventory->addProduct(Product(6, "Snickers", 175, 5));
-   productNames[6] = "Snickers";
-   inventory->addProduct(Product(7, "M&Ms Peanut", 175, 0));
-   productNames[7] = "M&Ms Peanut";
-   inventory->addProduct(Product(8, "Twix", 175, 12));
-   productNames[8] = "Twix";
-   inventory->addProduct(Product(9, "Reese's Cups", 175, 3));
-   productNames[9] = "Reese's Cups";
-   inventory->addProduct(Product(10, "Skittles", 150, 11));
-   productNames[10] = "Skittles";
-   inventory->addProduct(Product(11, "Coca Cola", 200, 7));
-   productNames[11] = "Coca Cola";
-   inventory->addProduct(Product(12, "Pepsi", 200, 3));
-   productNames[12] = "Pepsi";
-   inventory->addProduct(Product(13, "Mountain Dew", 200, 5));
-   productNames[13] = "Mountain Dew";
-   inventory->addProduct(Product(14, "Dr Pepper", 200, 5));
-   productNames[14] = "Dr Pepper";
-   inventory->addProduct(Product(15, "Sprite", 200, 12));
-   productNames[15] = "Sprite";
-   inventory->addProduct(Product(16, "Trail Mix", 250, 14));
-   productNames[16] = "Trail Mix";
-   inventory->addProduct(Product(17, "Granola Bar", 150, 0));
-   productNames[17] = "Granola Bar";
-   inventory->addProduct(Product(18, "Mixed Nuts", 275, 5));
-   productNames[18] = "Mixed Nuts";
-   inventory->addProduct(Product(19, "Dried Fruit", 225, 5));
-   productNames[19] = "Dried Fruit";
-   inventory->addProduct(Product(20, "Water Bottle", 150, 4));
-   productNames[20] = "Water Bottle";
+    inventory->addProduct(Product(1, "Flaming Hot Cheetos", 300, 2));
+    inventory->addProduct(Product(2, "Doritos Nacho Cheese", 300, 0));
+    inventory->addProduct(Product(3, "Lays Classic", 275, 3));
+    inventory->addProduct(Product(4, "Ruffles Cheddar", 275, 5));
+    inventory->addProduct(Product(5, "Pringles Original", 325, 15));
+    inventory->addProduct(Product(6, "Snickers", 175, 5));
+    inventory->addProduct(Product(7, "M&Ms Peanut", 175, 0));
+    inventory->addProduct(Product(8, "Twix", 175, 12));
+    inventory->addProduct(Product(9, "Reese's Cups", 175, 3));
+    inventory->addProduct(Product(10, "Skittles", 150, 11));
+    inventory->addProduct(Product(11, "Coca Cola", 200, 7));
+    inventory->addProduct(Product(12, "Pepsi", 200, 3));
+    inventory->addProduct(Product(13, "Mountain Dew", 200, 5));
+    inventory->addProduct(Product(14, "Dr Pepper", 200, 5));
+    inventory->addProduct(Product(15, "Sprite", 200, 12));
+    inventory->addProduct(Product(16, "Trail Mix", 250, 14));
+    inventory->addProduct(Product(17, "Granola Bar", 150, 0));
+    inventory->addProduct(Product(18, "Mixed Nuts", 275, 5));
+    inventory->addProduct(Product(19, "Dried Fruit", 225, 5));
+    inventory->addProduct(Product(20, "Water Bottle", 150, 4));
 }
-
 
 void VendingMachine::displayProducts() const {
    displayHeader();
@@ -188,7 +208,14 @@ bool VendingMachine::selectProduct(int productId) {
    }
    
    displayPrice(productId);
-   currentTransaction = new Transaction(productId, productNames[productId]);
+   std::string productName;
+   for(const auto& product : inventory->getProducts()) {
+       if(product.getProductID() == productId) {
+           productName = product.getName();
+           break;
+       }
+   }
+   currentTransaction = new Transaction(productId, productName);
    
    int insertedAmount = handleMoneyInsertion();
    if (insertedAmount > 0) {
