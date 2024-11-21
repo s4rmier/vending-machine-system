@@ -9,7 +9,7 @@
 class VendingMachine {
 private:
     int machineID;
-    float currentBalance;
+    int currentBalance;
     
     Inventory* inventory;
     PaymentProcessor* paymentProcessor;
@@ -19,7 +19,7 @@ private:
 
     void recordSale();
     void displayHeader();
-    float handleMoneyInsertion();
+    int handleMoneyInsertion();
     void initializeProducts();
 
 public:
@@ -32,9 +32,9 @@ public:
     void cancelTransaction();
     bool accessAdminPanel(Admin* adminUser);
     void displayPrice(int productId);
-    float getProductPrice(int productId);
+    int getProductPrice(int productId);
     void displayOutOfStock();
-    float getCurrentBalance() const;
-    bool insertMoney(float amount);
-    float returnChange();
+    int getCurrentBalance() const;
+    bool insertMoney(int amount);
+    int returnChange();
 };

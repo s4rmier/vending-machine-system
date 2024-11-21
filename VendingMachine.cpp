@@ -6,7 +6,7 @@
 class VendingMachine {
 private:
     int machineID;
-    float currentBalance;
+    int currentBalance;
     
     Inventory* inventory;
     PaymentProcessor* paymentProcessor;
@@ -24,12 +24,13 @@ private:
         std::cout << "## University Vendo ##\n\n";
     }
 
-    float handleMoneyInsertion() {
+    int handleMoneyInsertion() {
         bool inserting = true;
-        float totalAmount = 0.0f;
+        int totalAmount = 0;
         
-        while (inserting && totalAmount < 20.0f) {
-            std::cout << "\nTotal Amount: $" << std::fixed << std::setprecision(2) << totalAmount << "\n\n";
+        while (inserting && totalAmount < 2000) {
+            std::cout << "\nTotal Amount: $" << (totalAmount / 100) << "."
+                     << (totalAmount % 100 < 10 ? "0" : "") << (totalAmount % 100) << "\n\n";
             std::cout << "1. Insert 1¢\n";
             std::cout << "2. Insert 5¢\n";
             std::cout << "3. Insert 10¢\n";
@@ -46,16 +47,16 @@ private:
             std::cin >> choice;
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-            float amounts[] = {0.01f, 0.05f, 0.10f, 0.25f, 1.00f, 5.00f, 10.00f, 20.00f};
+            int amounts[] = {1, 5, 10, 25, 100, 500, 1000, 2000};
             
             if (choice >= 1 && choice <= 8) {
-                float amount = amounts[choice-1];
-                if (totalAmount + amount > 20.0f) {
+                int amount = amounts[choice-1];
+                if (totalAmount + amount > 2000) {
                     std::cout << "Cannot accept more than $20.00\n";
                     continue;
                 }
                 totalAmount += amount;
-                if (amount == 20.0f || totalAmount >= 20.0f) {
+                if (amount == 2000 || totalAmount >= 2000) {
                     break;
                 }
             }
@@ -74,31 +75,31 @@ private:
     }
 
     void initializeProducts() {
-        inventory->addProduct(Product(1, "Flaming Hot Cheetos", 3.00, 15));
-        inventory->addProduct(Product(2, "Doritos Nacho Cheese", 3.00, 15));
-        inventory->addProduct(Product(3, "Lays Classic", 2.75, 15));
-        inventory->addProduct(Product(4, "Ruffles Cheddar", 2.75, 15));
-        inventory->addProduct(Product(5, "Pringles Original", 3.25, 15));
-        inventory->addProduct(Product(6, "Snickers", 1.75, 15));
-        inventory->addProduct(Product(7, "M&Ms Peanut", 1.75, 15));
-        inventory->addProduct(Product(8, "Twix", 1.75, 15));
-        inventory->addProduct(Product(9, "Reese's Cups", 1.75, 15));
-        inventory->addProduct(Product(10, "Skittles", 1.50, 15));
-        inventory->addProduct(Product(11, "Coca Cola", 2.00, 15));
-        inventory->addProduct(Product(12, "Pepsi", 2.00, 15));
-        inventory->addProduct(Product(13, "Mountain Dew", 2.00, 15));
-        inventory->addProduct(Product(14, "Dr Pepper", 2.00, 15));
-        inventory->addProduct(Product(15, "Sprite", 2.00, 15));
-        inventory->addProduct(Product(16, "Trail Mix", 2.50, 15));
-        inventory->addProduct(Product(17, "Granola Bar", 1.50, 15));
-        inventory->addProduct(Product(18, "Mixed Nuts", 2.75, 15));
-        inventory->addProduct(Product(19, "Dried Fruit", 2.25, 15));
-        inventory->addProduct(Product(20, "Water Bottle", 1.50, 15));
+        inventory->addProduct(Product(1, "Flaming Hot Cheetos", 300, 15));
+        inventory->addProduct(Product(2, "Doritos Nacho Cheese", 300, 15));
+        inventory->addProduct(Product(3, "Lays Classic", 275, 15));
+        inventory->addProduct(Product(4, "Ruffles Cheddar", 275, 15));
+        inventory->addProduct(Product(5, "Pringles Original", 325, 15));
+        inventory->addProduct(Product(6, "Snickers", 175, 15));
+        inventory->addProduct(Product(7, "M&Ms Peanut", 175, 15));
+        inventory->addProduct(Product(8, "Twix", 175, 15));
+        inventory->addProduct(Product(9, "Reese's Cups", 175, 15));
+        inventory->addProduct(Product(10, "Skittles", 150, 15));
+        inventory->addProduct(Product(11, "Coca Cola", 200, 15));
+        inventory->addProduct(Product(12, "Pepsi", 200, 15));
+        inventory->addProduct(Product(13, "Mountain Dew", 200, 15));
+        inventory->addProduct(Product(14, "Dr Pepper", 200, 15));
+        inventory->addProduct(Product(15, "Sprite", 200, 15));
+        inventory->addProduct(Product(16, "Trail Mix", 250, 15));
+        inventory->addProduct(Product(17, "Granola Bar", 150, 15));
+        inventory->addProduct(Product(18, "Mixed Nuts", 275, 15));
+        inventory->addProduct(Product(19, "Dried Fruit", 225, 15));
+        inventory->addProduct(Product(20, "Water Bottle", 150, 15));
     }
 
 public:
     VendingMachine(int id) 
-        : machineID(id), currentBalance(0.0), currentTransaction(nullptr) {
+        : machineID(id), currentBalance(0), currentTransaction(nullptr) {
         inventory = new Inventory(id);
         paymentProcessor = new PaymentProcessor();
         admin = new Admin();
@@ -119,7 +120,6 @@ public:
     void displayProducts() const {
         displayHeader();
         std::cout << "Available Products:\n";
-        std::cout << std::setfill('0') << std::fixed << std::setprecision(2);
         inventory->displayInventory();
     }
 
@@ -132,7 +132,7 @@ public:
         displayPrice(productId);
         currentTransaction = new Transaction(productId);
         
-        float insertedAmount = handleMoneyInsertion();
+        int insertedAmount = handleMoneyInsertion();
         if (insertedAmount > 0) {
             return insertMoney(insertedAmount);
         }
@@ -144,7 +144,7 @@ public:
             return false;
         }
 
-        float price = inventory->getProductPrice(productId);
+        int price = inventory->getProductPrice(productId);
         if (currentBalance >= price) {
             if (currentTransaction->completeTransaction(price)) {
                 inventory->updateInventory(productId, -1);
@@ -181,21 +181,21 @@ public:
     }
 
     void displayPrice(int productId) {
-        float price = inventory->getProductPrice(productId);
-        std::cout << "Price: $" << std::fixed << std::setprecision(2) 
-                 << price << std::endl;
+        int price = inventory->getProductPrice(productId);
+        std::cout << "Price: $" << (price / 100) << "."
+                 << (price % 100 < 10 ? "0" : "") << (price % 100) << std::endl;
     }
 
     void displayOutOfStock() {
         std::cout << "Product is out of stock.\n";
     }
 
-    float getCurrentBalance() const {
+    int getCurrentBalance() const {
         return currentBalance;
     }
 
-    bool insertMoney(float amount) {
-        if (amount > 20.0f) {
+    bool insertMoney(int amount) {
+        if (amount > 2000) {
             std::cout << "Cannot accept more than $20.00\n";
             return false;
         }
@@ -210,11 +210,11 @@ public:
         return false;
     }
 
-    float returnChange() {
-        float change = currentBalance;
+    int returnChange() {
+        int change = currentBalance;
         if (change > 0) {
-            std::cout << "Returning change: $" << std::fixed << std::setprecision(2) 
-                     << change << std::endl;
+            std::cout << "Returning change: $" << (change / 100) << "."
+                     << (change % 100 < 10 ? "0" : "") << (change % 100) << std::endl;
             currentBalance = 0;
         }
         return change;

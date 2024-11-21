@@ -10,15 +10,15 @@ class Transaction
 {
 private:
 	int transactionID;
-	float amountPaid;
-	float changeReturned;
+	int amountPaid;
+	int changeReturned;
 	string transactionStatus;
 
 public:
 	Transaction(int id);
 
-	bool initiateTransaction(float amount);
-	bool completeTransaction(float price);
+	bool initiateTransaction(int amount);
+	bool completeTransaction(int price);
 	bool refundTransaction();
 	bool cancelTransaction();
 };

@@ -7,7 +7,7 @@ Transaction::Transaction(int id)
 	:transactionID(id), amountPaid(0.0), changeReturned(0.0),
 	transactionStatus("Pending") {}
 
-bool Transaction::initiateTransaction(float amount) {
+bool Transaction::initiateTransaction(int amount) {
 	if (amount <= 0) {
 		cout << "Invalid payment amount. \n";
 		return false;
@@ -17,7 +17,7 @@ bool Transaction::initiateTransaction(float amount) {
 	return true;
 }
 
-bool Transaction::completeTransaction(float price) {
+bool Transaction::completeTransaction(int price) {
 	if (amountPaid >= price) {
 		changeReturned = amountPaid - price;
 		transactionStatus = "Completed.";

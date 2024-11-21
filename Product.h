@@ -10,14 +10,14 @@ class Product
 private:
 	int productID;
 	string name;
-	float price;
+	int price;
 	int quantity;
 
-public: Product(int id, const string& n, float p, int q);
+public: Product(int id, const string& n, int p, int q);
 
 	  int getProductID()const;
 	  string getName() const;
-	  float getPrice() const;
+	  int getPrice() const;
 	  int getQuantity() const;
 	  void setQuantity(int q);
 	  void displayProduct() const;
