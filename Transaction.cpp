@@ -1,17 +1,28 @@
 #include "Transaction.h"
-#include <iostream>
 
-Transaction::Transaction(int id)
-    : transactionID(0), productID(id), amountPaid(0), 
-      changeReturned(0), transactionStatus("Pending") {}
+Transaction::Transaction(int id, const std::string& name)
+    : transactionID(id),
+      productID(id),
+      productName(name),
+      amountPaid(0),
+      changeReturned(0),
+      transactionStatus("Pending") {}
+
+Transaction::Transaction(const Transaction& other)
+    : transactionID(other.transactionID),
+      productID(other.productID),
+      productName(other.productName),
+      amountPaid(other.amountPaid),
+      changeReturned(other.changeReturned),
+      transactionStatus(other.transactionStatus) {}
 
 bool Transaction::initiateTransaction(int amount) {
-    if (amount <= 0) {
-        return false;
+    if (amount > 0) {
+        amountPaid = amount;
+        transactionStatus = "Initiated";
+        return true;
     }
-    amountPaid = amount;
-    transactionStatus = "Initiated";
-    return true;
+    return false;
 }
 
 bool Transaction::completeTransaction(int price) {
@@ -24,37 +35,18 @@ bool Transaction::completeTransaction(int price) {
 }
 
 bool Transaction::refundTransaction() {
-    if (transactionStatus == "Initiated" || transactionStatus == "Completed") {
-        transactionStatus = "Refunded";
-        return true;
-    }
-    return false;
+    transactionStatus = "Refunded";
+    return true;
 }
 
 bool Transaction::cancelTransaction() {
-    if (transactionStatus == "Initiated") {
-        transactionStatus = "Cancelled";
-        return true;
-    }
-    return false;
+    transactionStatus = "Cancelled";
+    return true;
 }
 
-int Transaction::getTransactionID() const {
-    return transactionID;
-}
-
-int Transaction::getAmountPaid() const {
-    return amountPaid;
-}
-
-int Transaction::getChangeReturned() const {
-    return changeReturned;
-}
-
-int Transaction::getProductID() const {
-    return productID;
-}
-
-std::string Transaction::getStatus() const {
-    return transactionStatus;
-}
+int Transaction::getTransactionID() const { return transactionID; }
+int Transaction::getAmountPaid() const { return amountPaid; }
+int Transaction::getChangeReturned() const { return changeReturned; }
+int Transaction::getProductID() const { return productID; }
+std::string Transaction::getStatus() const { return transactionStatus; }
+std::string Transaction::getProductName() const { return productName; }

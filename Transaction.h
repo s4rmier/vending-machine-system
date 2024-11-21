@@ -6,14 +6,17 @@
 
 class Transaction {
 private:
+    static int nextTransactionID;
     int transactionID;
+    std::string productName;
+    int productID;
     int amountPaid;
     int changeReturned;
     std::string transactionStatus;
-    int productID;
 
 public:
-    Transaction(int id);
+    Transaction(int id, const std::string& name);
+    Transaction(const Transaction& other);
     bool initiateTransaction(int amount);
     bool completeTransaction(int price);
     bool refundTransaction();
@@ -24,6 +27,7 @@ public:
     int getChangeReturned() const;
     int getProductID() const;
     std::string getStatus() const;
+    std::string getProductName() const;
 };
 
 #endif

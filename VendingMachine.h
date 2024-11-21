@@ -5,6 +5,8 @@
 #include "Admin.h"
 #include "SalesData.h"
 #include "Transaction.h"
+#include <map>
+#include <string>
 
 class VendingMachine {
 private:
@@ -21,6 +23,8 @@ private:
     void displayHeader() const;
     int handleMoneyInsertion();
     void initializeProducts();
+    private:
+    std::map<int, std::string> productNames;
 
 public:
     VendingMachine(int id);
