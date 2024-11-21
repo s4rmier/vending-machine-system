@@ -1,7 +1,4 @@
-#include "Inventory.cpp"
-#include "PaymentProcessor.cpp"
-#include "Admin.cpp"
-#include "SalesData.cpp"
+#include "VendingMachine.h"
 #include <iostream>
 #include <iomanip>
 #include <limits>
@@ -9,7 +6,6 @@
 class VendingMachine {
 private:
     int machineID;
-    std::string location;
     float currentBalance;
     
     Inventory* inventory;
@@ -24,7 +20,7 @@ private:
         }
     }
 
-    void displayHeader() {
+    void displayHeader() const{
         std::cout << "## University Vendo ##\n\n";
     }
 
@@ -99,48 +95,168 @@ private:
         inventory->addProduct(Product(19, "Dried Fruit", 2.25, 15));
         inventory->addProduct(Product(20, "Water Bottle", 1.50, 15));
     }
+
+public:
+    VendingMachine(int id) 
+        : machineID(id), currentBalance(0.0), currentTransaction(nullptr) {
+        inventory = new Inventory(id);
+        paymentProcessor = new PaymentProcessor();
+        admin = new Admin();
+        salesData = new SalesData();
+        initializeProducts();
+    }
+
+    ~VendingMachine() {
+        delete inventory;
+        delete paymentProcessor;
+        delete admin;
+        delete salesData;
+        if (currentTransaction) {
+            delete currentTransaction;
+        }
+    }
+
+    void displayProducts() const {
+        displayHeader();
+        std::cout << "Available Products:\n";
+        std::cout << std::setfill('0') << std::fixed << std::setprecision(2);
+        inventory->displayInventory();
+    }
+
+    bool selectProduct(int productId) {
+        if (!inventory->checkAvailability(productId)) {
+            displayOutOfStock();
+            return false;
+        }
+        
+        displayPrice(productId);
+        currentTransaction = new Transaction(productId);
+        
+        float insertedAmount = handleMoneyInsertion();
+        if (insertedAmount > 0) {
+            return insertMoney(insertedAmount);
+        }
+        return false;
+    }
+
+    bool dispenseProduct(int productId) {
+        if (!currentTransaction) {
+            return false;
+        }
+
+        float price = inventory->getProductPrice(productId);
+        if (currentBalance >= price) {
+            if (currentTransaction->completeTransaction(price)) {
+                inventory->updateInventory(productId, -1);
+                recordSale();
+                std::cout << "\nDispensing... press Enter to continue";
+                std::cin.get();
+                std::cout << "\n";
+                returnChange();
+                delete currentTransaction;
+                currentTransaction = nullptr;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void cancelTransaction() {
+        if (currentTransaction) {
+            currentTransaction->cancelTransaction();
+            if (currentBalance > 0) {
+                returnChange();
+            }
+            delete currentTransaction;
+            currentTransaction = nullptr;
+        }
+    }
+
+    bool accessAdminPanel(Admin* adminUser) {
+        if (adminUser && adminUser->login("admin")) {
+            adminUser->monitorSalesData();
+            return true;
+        }
+        return false;
+    }
+
+    void displayPrice(int productId) {
+        float price = inventory->getProductPrice(productId);
+        std::cout << "Price: $" << std::fixed << std::setprecision(2) 
+                 << price << std::endl;
+    }
+
+    void displayOutOfStock() {
+        std::cout << "Product is out of stock.\n";
+    }
+
+    float getCurrentBalance() const {
+        return currentBalance;
+    }
+
+    bool insertMoney(float amount) {
+        if (amount > 20.0f) {
+            std::cout << "Cannot accept more than $20.00\n";
+            return false;
+        }
+        
+        if (paymentProcessor->validateCurrency(amount)) {
+            currentBalance += amount;
+            if (currentTransaction) {
+                currentTransaction->initiateTransaction(currentBalance);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    float returnChange() {
+        float change = currentBalance;
+        if (change > 0) {
+            std::cout << "Returning change: $" << std::fixed << std::setprecision(2) 
+                     << change << std::endl;
+            currentBalance = 0;
+        }
+        return change;
+    }
 };
 
-
-/* sample main to call my classes - HK
-#include "Product.h"
-#include "Inventory.h"
-#include "Transaction.h"
-#include <iostream>
-
-using namespace std;
-
 int main() {
-	//create the products here
-	Product p1(1, "Flaming hot Cheetos", 3.00, 10);
-
-
-	//create the inventory and add products
-	Inventory inventory(101);
-	inventory.addProduct(p1);
-
-	//display inventory
-	inventory.displayInventory();
-
-	//check availability and update inventory
-	if (inventory.checkAvailability(1)) {
-		cout << "Product is available.\n";
-		inventory.updateInventory(1, -1);
-	}
-
-	//display updated inventory
-	inventory.displayInventory();
-
-	//create a transaction
-	Transaction transaction(1001);
-	if (transaction.initiateTransaction(3.00)) {
-		if (transaction.completeTransaction(1.50)) {
-			inventory.updateInventory(1, -1);//reduces the inventory
-		}
-	}
-
-	//refund example
-	transaction.refundTransaction();
-	return 0;
+    VendingMachine machine(1);
+    bool running = true;
+    std::string input;
+    
+    while(running) {
+        machine.displayProducts();
+        std::cout << "\n0. Exit\n";
+        std::cout << "\nPlease select a product number: ";
+        
+        std::getline(std::cin, input);
+        
+        try {
+            int choice = std::stoi(input);
+            
+            if (choice == 0) {
+                running = false;
+                continue;
+            }
+            
+            if (choice == 99) {
+                Admin admin;
+                machine.accessAdminPanel(&admin);
+                continue;
+            }
+            
+            if (machine.selectProduct(choice)) {
+                if (!machine.dispenseProduct(choice)) {
+                    machine.cancelTransaction();
+                }
+            }
+        }
+        catch (const std::invalid_argument&) {
+            std::cout << "Invalid input. Please try again.\n";
+        }
+    }
+    
+    return 0;
 }
-*/

@@ -1,4 +1,5 @@
-#include "SalesData.cpp"
+#include "Admin.h"
+#include "SalesData.h"
 
 class Admin {
 public:

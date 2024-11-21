@@ -1,5 +1,6 @@
 #include "Inventory.h"
 #include<iostream>
+#include <iomanip>
 
 using namespace std;
 
@@ -26,9 +27,22 @@ void Inventory::updateInventory(int productID, int quantity) {
 		}
 	}
 }
+
 void Inventory::displayInventory() const {
-	cout << "Inventory ID; " << inventoryID << "\n";
 	for (const auto& product : products) {
-		product.displayProduct();
+		cout << setw(2) << setfill('0') << product.getProductID() << ". "
+			<< product.getName()
+			<< " - $" << fixed << setprecision(2) << product.getPrice()
+			<< " (Qty: " << product.getQuantity() << ")\n";
 	}
+	cout << "99. Admin Panel\n";
+}
+
+float Inventory::getProductPrice(int productID) const {
+	for (const auto& product : products) {
+		if (product.getProductID() == productID) {
+			return product.getPrice();
+		}
+	}
+	return 0.0f;
 }
