@@ -11,5 +11,5 @@ private:
 public:
     Admin();
     bool login(std::string code);
-    SalesData* monitorSalesData();
+    void monitorSalesData(SalesData* salesData);
 };
